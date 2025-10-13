@@ -1,0 +1,6 @@
+{
+  "packages": [
+    { "name": "Calculator", "description": "A calculator app by andrewagain", "repository": "https://github.com/andrewagain/calculator.git" },
+    { "name": "BMI Calculator", "description": "A calculator app by GermaVinsmoke", "repository": "https://github.com/GermaVinsmoke/bmi-calculator.git" }
+  ]
+}
