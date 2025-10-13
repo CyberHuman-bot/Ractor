@@ -6,7 +6,7 @@ set -e
 
 # ───────── CONFIGURATION ─────────
 CONFIG_FILES=("/etc/raptor.conf" "$HOME/.config/raptor.conf")
-RAPTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Raptor/apps/main"
+RAPTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Raptor/apps"
 DESKTOP_ENTRIES_SYSTEM="/usr/share/applications"
 DESKTOP_ENTRIES_USER="$HOME/.local/share/applications"
 
