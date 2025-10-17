@@ -1,1 +1,100 @@
-
+{
+  "version": "1.0.0",
+  "last_updated": "2024-10-17",
+  "packages": [
+    {
+      "name": "calculator",
+      "description": "A modern calculator app built with React",
+      "version": "1.0.0",
+      "category": "Utilities",
+      "tags": ["calculator", "math", "utility"]
+    },
+    {
+      "name": "todo-app",
+      "description": "Simple and elegant todo list application",
+      "version": "2.1.0",
+      "category": "Productivity",
+      "tags": ["todo", "tasks", "productivity"]
+    },
+    {
+      "name": "weather-dashboard",
+      "description": "Beautiful weather dashboard with forecasts",
+      "version": "1.5.2",
+      "category": "Weather",
+      "tags": ["weather", "forecast", "dashboard"]
+    },
+    {
+      "name": "markdown-editor",
+      "description": "Live markdown editor with preview",
+      "version": "3.0.0",
+      "category": "Development",
+      "tags": ["markdown", "editor", "writing"]
+    },
+    {
+      "name": "music-player",
+      "description": "Modern music player with playlist support",
+      "version": "1.2.0",
+      "category": "Media",
+      "tags": ["music", "audio", "player"]
+    },
+    {
+      "name": "note-taking",
+      "description": "Feature-rich note taking application",
+      "version": "2.0.0",
+      "category": "Productivity",
+      "tags": ["notes", "writing", "productivity"]
+    },
+    {
+      "name": "pomodoro-timer",
+      "description": "Productivity timer using the Pomodoro technique",
+      "version": "1.0.1",
+      "category": "Productivity",
+      "tags": ["timer", "pomodoro", "productivity"]
+    },
+    {
+      "name": "image-gallery",
+      "description": "Responsive image gallery with filters",
+      "version": "1.3.0",
+      "category": "Media",
+      "tags": ["images", "gallery", "photos"]
+    },
+    {
+      "name": "chat-app",
+      "description": "Real-time chat application",
+      "version": "2.5.0",
+      "category": "Communication",
+      "tags": ["chat", "messaging", "communication"]
+    },
+    {
+      "name": "code-editor",
+      "description": "Lightweight code editor with syntax highlighting",
+      "version": "1.4.0",
+      "category": "Development",
+      "tags": ["code", "editor", "development"]
+    },
+    {
+      "name": "expense-tracker",
+      "description": "Track your expenses and manage budget",
+      "version": "1.1.0",
+      "category": "Finance",
+      "tags": ["finance", "budget", "expenses"]
+    },
+    {
+      "name": "recipe-book",
+      "description": "Digital cookbook for managing recipes",
+      "version": "1.0.0",
+      "category": "Food",
+      "tags": ["recipes", "cooking", "food"]
+    }
+  ],
+  "categories": [
+    "Utilities",
+    "Productivity",
+    "Weather",
+    "Development",
+    "Media",
+    "Communication",
+    "Finance",
+    "Food"
+  ]
+}
