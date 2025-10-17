@@ -1,12 +1,12 @@
 #!/bin/bash
 # Raptor - React App Package Manager v0.2.0
-# https://github.com/CyberHuman-bot/Raptor/raptor.sh
+# https://github.com/CyberHuman-bot/Ractor/ractor.sh
 
 set -e
 
 # ───────── CONFIGURATION ─────────
 CONFIG_FILES=("/etc/raptor.conf" "$HOME/.config/raptor.conf")
-RAPTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Raptor/apps"
+RAPTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Raptor/refs/heads/apps/"
 DESKTOP_ENTRIES_SYSTEM="/usr/share/applications"
 DESKTOP_ENTRIES_USER="$HOME/.local/share/applications"
 
