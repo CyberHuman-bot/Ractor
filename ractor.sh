@@ -214,7 +214,7 @@ EOF
 
 # ───────── SELF-UPDATE ─────────
 ractor_self_update() {
-    local url="https://raw.githubusercontent.com/your-repo/ractor/main/ractor.sh"
+    local url="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main/ractor.sh"
     msg "Updating Ractor..."
     curl -fsSL "$url" -o /usr/local/bin/ractor || error "Download failed"
     chmod +x /usr/local/bin/ractor
