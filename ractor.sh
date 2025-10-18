@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ractor - React App Package Manager v0.2.0
+# Ractor - React App Package Manager v0.2.1
 # https://github.com/CyberHuman-bot/Ractor/ractor.sh
 
 set -e
@@ -224,7 +224,7 @@ ractor_self_update() {
 # ───────── HELP ─────────
 ractor_help() {
     cat <<EOF
-Ractor - React App Package Manager v0.2.0
+Ractor - React App Package Manager v0.2.1
 
 Usage: ractor <command> [options]
 
