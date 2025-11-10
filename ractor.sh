@@ -6,7 +6,7 @@ set -e
 
 # ───────── CONFIGURATION ─────────
 CONFIG_FILES=("/etc/ractor.conf" "$HOME/.config/ractor.conf")
-RACTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/apps/"
+RACTOR_REPO="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main/"
 DESKTOP_ENTRIES_SYSTEM="/usr/share/applications"
 DESKTOP_ENTRIES_USER="$HOME/.local/share/applications"
 
