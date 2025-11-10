@@ -1,0 +1,116 @@
+{
+  "version": "1.0.0",
+  "updated": "2025-11-10",
+  "repository": "https://github.com/CyberHuman-bot/Ractor",
+  "description": "Ractor package registry - React app package manager",
+  "packages": [
+    {
+      "name": "calculator",
+      "version": "1.0.0",
+      "description": "A beautiful, simple calculator built with React",
+      "repository": "https://github.com/ahfarmer/calculator.git",
+      "author": "Andrew Farmer",
+      "license": "MIT",
+      "tags": ["utility", "calculator", "math"]
+    },
+    {
+      "name": "emoji-search",
+      "version": "1.0.0",
+      "description": "React app for searching emoji",
+      "repository": "https://github.com/ahfarmer/emoji-search.git",
+      "author": "Andrew Farmer",
+      "license": "MIT",
+      "tags": ["emoji", "search", "fun"]
+    },
+    {
+      "name": "markdown-previewer",
+      "version": "1.0.0",
+      "description": "A markdown editor with live preview",
+      "repository": "https://github.com/franknawrocki/markdown-previewer.git",
+      "author": "Frank Nawrocki",
+      "license": "MIT",
+      "tags": ["markdown", "editor", "productivity"]
+    },
+    {
+      "name": "pomodoro-clock",
+      "version": "1.0.0",
+      "description": "Pomodoro timer for productivity",
+      "repository": "https://github.com/freeCodeCamp/fcc-pomodoro-clock.git",
+      "author": "freeCodeCamp",
+      "license": "BSD-3-Clause",
+      "tags": ["productivity", "timer", "pomodoro"]
+    },
+    {
+      "name": "drum-machine",
+      "version": "1.0.0",
+      "description": "Interactive drum machine with sound pads",
+      "repository": "https://github.com/freeCodeCamp/fcc-drum-machine.git",
+      "author": "freeCodeCamp",
+      "license": "BSD-3-Clause",
+      "tags": ["music", "audio", "entertainment"]
+    },
+    {
+      "name": "quote-machine",
+      "version": "1.0.0",
+      "description": "Random quote generator with social sharing",
+      "repository": "https://github.com/sophialittlejohn/random-quote-machine.git",
+      "author": "Sophia Littlejohn",
+      "license": "MIT",
+      "tags": ["quotes", "inspiration", "social"]
+    },
+    {
+      "name": "weather-app",
+      "version": "2.0.0",
+      "description": "Local weather application with forecast",
+      "repository": "https://github.com/Karanjot-singh/react-weather-app.git",
+      "author": "Karanjot Singh",
+      "license": "MIT",
+      "tags": ["weather", "forecast", "location"]
+    },
+    {
+      "name": "todo-app",
+      "version": "1.0.0",
+      "description": "Classic todo list with local storage",
+      "repository": "https://github.com/kabirbaidhya/react-todo-app.git",
+      "author": "Kabir Baidhya",
+      "license": "MIT",
+      "tags": ["productivity", "todo", "tasks"]
+    },
+    {
+      "name": "chat-app",
+      "version": "1.0.0",
+      "description": "Real-time chat application",
+      "repository": "https://github.com/Kennybabs-py/react-chat-app.git",
+      "author": "Kenny Babs",
+      "license": "MIT",
+      "tags": ["chat", "realtime", "communication"]
+    },
+    {
+      "name": "expense-tracker",
+      "version": "1.0.0",
+      "description": "Track your expenses and income",
+      "repository": "https://github.com/Gapur/expense-tracker.git",
+      "author": "Gapur Kassym",
+      "license": "MIT",
+      "tags": ["finance", "budget", "tracker"]
+    },
+    {
+      "name": "movie-search",
+      "version": "1.0.0",
+      "description": "Search and discover movies using OMDB API",
+      "repository": "https://github.com/Ranveer098/movie-search-app.git",
+      "author": "Ranveer",
+      "license": "MIT",
+      "tags": ["movies", "entertainment", "api"]
+    },
+    {
+      "name": "notes-app",
+      "version": "1.0.0",
+      "description": "Simple note-taking application",
+      "repository": "https://github.com/rafaelmessias/react-notes-app.git",
+      "author": "Rafael Messias",
+      "license": "MIT",
+      "tags": ["notes", "productivity", "writing"]
+    }
+  ]
+}
