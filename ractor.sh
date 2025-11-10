@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ractor - React App Package Manager v0.2.1
+# Ractor - React App Package Manager v0.3.0
 # https://github.com/CyberHuman-bot/Ractor/ractor.sh
 
 set -e
@@ -51,6 +51,53 @@ check_deps() {
 }
 init_dirs() { mkdir -p "$RACTOR_DIR" "$RACTOR_CACHE" "$RACTOR_INSTALLED"; }
 
+# ───────── PACKAGE LOOKUP ─────────
+get_package_info() {
+    local app="$1"
+    local packages_json="$RACTOR_CACHE/packages.json"
+    
+    # Download packages index if not cached or older than 1 hour
+    if [[ ! -f "$packages_json" ]] || [[ $(find "$packages_json" -mmin +60 2>/dev/null) ]]; then
+        info "Updating package index..."
+        curl -fsSL "$RACTOR_REPO/packages.json" -o "$packages_json" 2>/dev/null || error "Failed to fetch package index"
+    fi
+    
+    # Look up package in index
+    local repo_url
+    repo_url=$(jq -r --arg app "$app" '.packages[] | select(.name == $app) | .repository' "$packages_json" 2>/dev/null)
+    
+    if [[ -z "$repo_url" ]] || [[ "$repo_url" == "null" ]]; then
+        return 1
+    fi
+    
+    echo "$repo_url"
+    return 0
+}
+
+# ───────── BUILD VERIFICATION ─────────
+verify_build() {
+    local app_dir="$1"
+    local build_dir="$app_dir/build"
+    
+    # Check if build directory exists and has content
+    if [[ ! -d "$build_dir" ]]; then
+        error "Build failed: build directory not found"
+    fi
+    
+    # Check if build directory has index.html (standard React build output)
+    if [[ ! -f "$build_dir/index.html" ]]; then
+        error "Build failed: index.html not found in build directory"
+    fi
+    
+    # Check if build has static assets
+    if [[ ! -d "$build_dir/static" ]] || [[ -z "$(ls -A "$build_dir/static" 2>/dev/null)" ]]; then
+        warn "Build may be incomplete: static assets directory is empty or missing"
+    fi
+    
+    info "Build verification passed"
+    return 0
+}
+
 # ───────── INSTALL ─────────
 ractor_install() {
     check_deps
@@ -61,6 +108,8 @@ ractor_install() {
     msg "Installing $app..."
 
     local app_dir="$RACTOR_DIR/$app"
+    local repo_url=""
+    
     if [[ -f "$RACTOR_INSTALLED/$app.json" ]]; then
         warn "$app already installed"
         read -p "Reinstall? [y/N] " -n 1 -r; echo
@@ -71,24 +120,43 @@ ractor_install() {
     # Install from Git URL or repo
     if [[ "$app" =~ ^https?:// ]] || [[ "$app" =~ ^git@ ]]; then
         info "Cloning from Git repository..."
-        git clone "$app" "$app_dir" || error "Clone failed"
+        repo_url="$app"
+        # Extract app name from URL
+        app=$(basename "$app" .git)
+        app_dir="$RACTOR_DIR/$app"
+        git clone "$repo_url" "$app_dir" || error "Clone failed"
     else
-        info "Fetching package info..."
-        local manifest="$RACTOR_CACHE/$app.json"
-        curl -fsSL "$RACTOR_REPO/packages/$app.json" -o "$manifest" 2>/dev/null || error "Package '$app' not found"
-        local repo_url
-        repo_url=$(jq -r '.repository' "$manifest" 2>/dev/null)
-        [[ "$repo_url" == "null" ]] && error "Invalid package manifest"
-        info "Cloning from $repo_url..."
+        info "Looking up package in repository..."
+        repo_url=$(get_package_info "$app")
+        
+        if [[ -z "$repo_url" ]]; then
+            error "Package '$app' not found in repository"
+        fi
+        
+        info "Found package: $repo_url"
+        info "Cloning repository..."
         git clone "$repo_url" "$app_dir" || error "Clone failed"
     fi
 
     cd "$app_dir"
+    
+    # Check if package.json exists
+    if [[ ! -f "package.json" ]]; then
+        error "Invalid React app: package.json not found"
+    fi
+    
     info "Installing dependencies..."
-    npm install --prefer-offline --no-audit || error "npm install failed"
+    if ! npm install --prefer-offline --no-audit 2>&1 | tee /tmp/ractor-npm-install.log; then
+        error "npm install failed. Check /tmp/ractor-npm-install.log for details"
+    fi
 
     info "Building application..."
-    npm run build || warn "Build may have failed"
+    if ! npm run build 2>&1 | tee /tmp/ractor-npm-build.log; then
+        error "Build failed. Check /tmp/ractor-npm-build.log for details"
+    fi
+    
+    # Verify build was successful
+    verify_build "$app_dir"
 
     create_desktop_entry "$app" "$app_dir"
 
@@ -98,12 +166,14 @@ ractor_install() {
     "name": "$app",
     "install_date": "$(date -Iseconds)",
     "directory": "$app_dir",
+    "repository": "$repo_url",
     "version": "$(jq -r '.version' package.json 2>/dev/null || echo 'unknown')"
 }
 EOF
 
     msg "$app installed successfully!"
     info "Location: $app_dir"
+    info "Build output: $app_dir/build"
 }
 
 # ───────── REMOVE ─────────
@@ -132,20 +202,34 @@ ractor_update() {
     local app_dir
     app_dir=$(jq -r '.directory' "$RACTOR_INSTALLED/$app.json")
     cd "$app_dir"
+    
     info "Pulling latest changes..."
-    git pull origin main || git pull origin master || warn "Pull may have failed"
+    if ! git pull origin main 2>/dev/null && ! git pull origin master 2>/dev/null; then
+        error "Failed to pull updates from repository"
+    fi
 
     info "Updating dependencies..."
-    npm install --prefer-offline --no-audit
+    if ! npm install --prefer-offline --no-audit 2>&1 | tee /tmp/ractor-npm-install.log; then
+        error "npm install failed during update"
+    fi
 
     info "Rebuilding application..."
-    npm run build || warn "Build may have failed"
+    if ! npm run build 2>&1 | tee /tmp/ractor-npm-build.log; then
+        error "Build failed during update"
+    fi
+    
+    # Verify build was successful
+    verify_build "$app_dir"
 
     # Update metadata
-    jq --arg date "$(date -Iseconds)" '.install_date=$date' "$RACTOR_INSTALLED/$app.json" > "$RACTOR_INSTALLED/$app.json.tmp"
+    local new_version
+    new_version=$(jq -r '.version' "$app_dir/package.json" 2>/dev/null || echo 'unknown')
+    jq --arg date "$(date -Iseconds)" --arg ver "$new_version" \
+        '.install_date=$date | .version=$ver' \
+        "$RACTOR_INSTALLED/$app.json" > "$RACTOR_INSTALLED/$app.json.tmp"
     mv "$RACTOR_INSTALLED/$app.json.tmp" "$RACTOR_INSTALLED/$app.json"
 
-    msg "$app updated successfully!"
+    msg "$app updated successfully to version $new_version!"
 }
 
 # ───────── LIST ─────────
@@ -179,14 +263,22 @@ ractor_info() {
 
     # Check installed
     if [[ -f "$RACTOR_INSTALLED/$app.json" ]]; then
-        jq -r '. | "Name: \(.name)\nVersion: \(.version)\nInstalled: \(.install_date)\nDirectory: \(.directory)"' "$RACTOR_INSTALLED/$app.json"
+        jq -r '. | "Name: \(.name)\nVersion: \(.version)\nInstalled: \(.install_date)\nDirectory: \(.directory)\nRepository: \(.repository)"' "$RACTOR_INSTALLED/$app.json"
         return
     fi
 
-    # Check repo
-    local manifest="$RACTOR_CACHE/$app.json"
-    curl -fsSL "$RACTOR_REPO/packages/$app.json" -o "$manifest" 2>/dev/null || { warn "Package '$app' not found"; return; }
-    jq -r '. | "Name: \(.name)\nVersion: \(.version)\nDescription: \(.description)\nRepository: \(.repository)"' "$manifest"
+    # Check repo using package lookup
+    info "Looking up package in repository..."
+    local repo_url
+    repo_url=$(get_package_info "$app")
+    
+    if [[ -z "$repo_url" ]]; then
+        warn "Package '$app' not found in repository"
+        return 1
+    fi
+    
+    local packages_json="$RACTOR_CACHE/packages.json"
+    jq -r --arg app "$app" '.packages[] | select(.name == $app) | "Name: \(.name)\nVersion: \(.version // "unknown")\nDescription: \(.description)\nRepository: \(.repository)"' "$packages_json"
 }
 
 # ───────── DESKTOP ENTRY ─────────
@@ -224,7 +316,7 @@ ractor_self_update() {
 # ───────── HELP ─────────
 ractor_help() {
     cat <<EOF
-Ractor - React App Package Manager v0.2.1
+Ractor - React App Package Manager v0.3.0
 
 Usage: ractor <command> [options]
 
