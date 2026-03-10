@@ -1,14 +1,13 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║           Ractor Installer                                ║
-# ║           https://github.com/CyberHuman-bot/Ractor        ║
+# ║           Ractor Installer                               ║
+# ║           https://github.com/CyberHuman-bot/Ractor       ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 RACTOR_URL="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main/ractor.sh"
 
-# Colors
 if [[ -t 1 ]]; then
     LGREEN='\033[1;32m'; CYAN='\033[0;36m'
     LRED='\033[1;31m';   YELLOW='\033[1;33m'
@@ -63,28 +62,23 @@ mv "$tmp_file" "$INSTALL_PATH"
 success "Ractor v$VERSION installed to $INSTALL_PATH"
 
 # ───────── PATH CHECK ─────────
-if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-    echo
-    warn "$INSTALL_DIR is not in your PATH"
-    info "Adding to your shell config..."
+# Detect shell config
+SHELL_RC=""
+if [[ -f "$HOME/.zshrc" ]]; then
+    SHELL_RC="$HOME/.zshrc"
+elif [[ -f "$HOME/.bashrc" ]]; then
+    SHELL_RC="$HOME/.bashrc"
+fi
 
-    SHELL_RC=""
-    if [[ -f "$HOME/.zshrc" ]]; then
-        SHELL_RC="$HOME/.zshrc"
-    elif [[ -f "$HOME/.bashrc" ]]; then
-        SHELL_RC="$HOME/.bashrc"
-    fi
-
-    if [[ -n "$SHELL_RC" ]]; then
-        echo "" >> "$SHELL_RC"
-        echo "# Ractor" >> "$SHELL_RC"
-        echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_RC"
-        success "Added to $SHELL_RC"
-        warn "Run: source $SHELL_RC"
-    else
-        warn "Add this to your shell config manually:"
-        echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
-    fi
+# Only add PATH if not already present in rc file
+if [[ -n "$SHELL_RC" ]] && ! grep -q "$INSTALL_DIR" "$SHELL_RC" 2>/dev/null; then
+    echo "" >> "$SHELL_RC"
+    echo "# Ractor" >> "$SHELL_RC"
+    echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_RC"
+    success "Added $INSTALL_DIR to PATH in $SHELL_RC"
+    warn "Run: source $SHELL_RC"
+elif [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+    warn "Run: source $SHELL_RC  (to load PATH)"
 fi
 
 # ───────── DONE ─────────
