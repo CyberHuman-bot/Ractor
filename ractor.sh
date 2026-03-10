@@ -1,13 +1,13 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║         Ractor - .rac Package Manager v3.10r22            ║
-# ║         https://github.com/CyberHuman-bot/Racto r         ║
+# ║         Ractor - .rac Package Manager v3.10r23            ║
+# ║         https://github.com/CyberHuman-bot/Ractor          ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="3.10r22"
+RACTOR_VERSION="3.10r23"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
@@ -611,40 +611,27 @@ ractor_self_update() {
     msg "Checking for Ractor updates..."
     local tmp_file
     tmp_file=$(mktemp /tmp/ractor.XXXXXX)
-
     curl -fsSL "$RACTOR_SELF_URL" -o "$tmp_file" || {
         rm -f "$tmp_file"
         error "Failed to download update"
     }
-
     local new_ver
     new_ver=$(grep '^RACTOR_VERSION=' "$tmp_file" 2>/dev/null | cut -d'"' -f2 || echo "")
-
     if [[ "$new_ver" == "$RACTOR_VERSION" ]]; then
         rm -f "$tmp_file"
         success "Already up to date (v$RACTOR_VERSION)"
         return
     fi
-
-    [[ -n "$new_ver" ]] && info "New version: $new_ver (current: $RACTOR_VERSION)"
-    chmod +x "$tmp_file"
-
-    local target="$RACTOR_SELF"
-    mkdir -p "$(dirname "$target")"
-
-    if [[ -w "$(dirname "$target")" ]]; then
-        mv "$tmp_file" "$target"
-    else
-        sudo mv "$tmp_file" "$target"
-    fi
-
-    success "Ractor updated to v${new_ver:-latest}!"
-    _log "SELF-UPDATE: $RACTOR_VERSION -> ${new_ver:-?}"
+    info "New version: $new_ver (current: $RACTOR_VERSION)"
+    info "Running installer..."
+    rm -f "$tmp_file"
+    curl -fsSL "https://raw.githubusercontent.com/CyberHuman-bot/Ractor/main/install.sh" | bash
+    _log "SELF-UPDATE: $RACTOR_VERSION -> $new_ver"
 }
 
 # ───────── HELP ─────────
 ractor_help() {
-    cat << EOF
+    echo -e "
 
 ${BOLD}${CYAN}Ractor${NC} ${DIM}v${RACTOR_VERSION}${NC} — .rac Package Manager
 
@@ -690,10 +677,7 @@ ${BOLD}Examples:${NC}
   ractor pack ./myapp/
   ractor update --all
   ractor verify myapp.rac
-
-EOF
-}
-
+"
 # ───────── DISPATCH ─────────
 cmd="${1:-help}"
 shift || true
