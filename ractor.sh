@@ -53,6 +53,8 @@ else
 fi
 
 # ───────── LOGGING ─────────
+mkdir -p "$(dirname "$RACTOR_LOG")" 2>/dev/null || true
+touch "$RACTOR_LOG" 2>/dev/null || true
 _log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$RACTOR_LOG" 2>/dev/null || true; }
 
 msg()     { echo -e "${LGREEN}==>${NC}${BOLD} $*${NC}";      _log "INFO: $*"; }
