@@ -678,6 +678,7 @@ ${BOLD}Examples:${NC}
   ractor update --all
   ractor verify myapp.rac
 "
+}
 # ───────── DISPATCH ─────────
 cmd="${1:-help}"
 shift || true
