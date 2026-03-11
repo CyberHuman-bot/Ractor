@@ -330,7 +330,8 @@ _install_binaries() {
         (( count++ )) || true
     done
     [[ $count -eq 0 ]] && warn "No binaries found to install"
-}
+        return 0  # ← add this
+    }
 
 _install_react() {
     local src="$1" dest="$2"
@@ -389,6 +390,7 @@ Terminal=false
 Categories=Application;
 EOF
     step "Desktop entry created"
+    return 0  # ← add this
 }
 
 # ───────── REMOVE ─────────
