@@ -94,6 +94,7 @@ check_deps() {
         command -v "$dep" &>/dev/null || missing+=("$dep")
     done
     [[ ${#missing[@]} -gt 0 ]] && error "Missing required tools: ${missing[*]}"
+    return 0  # ← add this
 }
 
 # ───────── META PARSER ─────────
