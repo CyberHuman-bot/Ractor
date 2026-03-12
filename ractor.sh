@@ -1,13 +1,13 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║         Ractor - .rac Package Manager v3.10r26            ║
+# ║         Ractor - .rac Package Manager v3.10r27            ║
 # ║         https://github.com/CyberHuman-bot/Ractor          ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="3.10r26"
+RACTOR_VERSION="3.10r27"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
@@ -64,6 +64,24 @@ warn()    { echo -e "${YELLOW}${BOLD}[!]${NC} $*" >&2;       _log "WARN: $*"; }
 error()   { echo -e "${LRED}${BOLD}[✗] Error:${NC} $*" >&2; _log "ERR:  $*"; exit 1; }
 step()    { echo -e "${MAGENTA}  >${NC} $*"; }
 
+# ───────── PACKAGE MANAGER ─────────
+_pkg_install() {
+    local pkgs=("$@")
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get install -y "${pkgs[@]}" 2>/dev/null || true
+    elif command -v dnf &>/dev/null; then
+        sudo dnf install -y "${pkgs[@]}" 2>/dev/null || true
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm "${pkgs[@]}" 2>/dev/null || true
+    elif command -v zypper &>/dev/null; then
+        sudo zypper install -y "${pkgs[@]}" 2>/dev/null || true
+    elif command -v apk &>/dev/null; then
+        sudo apk add "${pkgs[@]}" 2>/dev/null || true
+    else
+        warn "No supported package manager found. Install manually: ${pkgs[*]}"
+    fi
+}
+
 # ───────── LOCK ─────────
 acquire_lock() {
     mkdir -p "$RACTOR_LIB"
@@ -93,8 +111,8 @@ check_deps() {
     for dep in "${deps[@]}"; do
         command -v "$dep" &>/dev/null || missing+=("$dep")
     done
-    [[ ${#missing[@]} -gt 0 ]] && error "Missing required tools: ${missing[*]}"
-    return 0  # ← add this
+    [[ ${#missing[@]} -gt 0 ]] && _pkg_install "${missing[@]}"
+    return 0
 }
 
 # ───────── META PARSER ─────────
@@ -159,12 +177,12 @@ handle_deps() {
     fi
 
     warn "Missing: ${missing[*]}"
-    read -rp "$(echo -e "${YELLOW}Install missing dependencies with apt?${NC} [Y/n] ")" choice
+    read -rp "$(echo -e "${YELLOW}Install missing dependencies?${NC} [Y/n] ")" choice
     choice="${choice:-y}"
     if [[ "$choice" =~ ^[Yy]$ ]]; then
-        sudo apt-get install -y "${missing[@]}" 2>/dev/null || \
-            warn "Some dependencies could not be auto-installed"
+        _pkg_install "${missing[@]}"
     fi
+    return 0
 }
 
 handle_optional() {
@@ -183,9 +201,9 @@ handle_optional() {
     echo
     read -rp "$(echo -e "${YELLOW}Install recommended packages?${NC} [y/N] ")" choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
-        sudo apt-get install -y "${pkgs[@]}" 2>/dev/null || \
-            warn "Some recommended packages could not be installed"
+        _pkg_install "${pkgs[@]}"
     fi
+    return 0
 }
 
 # ───────── PACKAGE FETCH ─────────
@@ -330,8 +348,8 @@ _install_binaries() {
         (( count++ )) || true
     done
     [[ $count -eq 0 ]] && warn "No binaries found to install"
-        return 0  # ← add this
-    }
+    return 0
+}
 
 _install_react() {
     local src="$1" dest="$2"
@@ -390,7 +408,7 @@ Terminal=false
 Categories=Application;
 EOF
     step "Desktop entry created"
-    return 0  # ← add this
+    return 0
 }
 
 # ───────── REMOVE ─────────
@@ -673,6 +691,9 @@ ${BOLD}META Fields:${NC}
   license=MIT             License
   arch=any                x86_64 | aarch64 | any
 
+${BOLD}Supported Package Managers:${NC}
+  apt, dnf, pacman, zypper, apk
+
 ${BOLD}Examples:${NC}
   ractor install myapp.rac
   ractor install https://example.com/pkg.rac
@@ -682,6 +703,7 @@ ${BOLD}Examples:${NC}
   ractor verify myapp.rac
 "
 }
+
 # ───────── DISPATCH ─────────
 cmd="${1:-help}"
 shift || true
