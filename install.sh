@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║           Ractor Installer                               ║
-# ║           https://github.com/elezaio-linux/Ractor       ║
+# ║           Ractor Installer                                ║
+# ║           https://github.com/elezaio-linux/Ractor         ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
