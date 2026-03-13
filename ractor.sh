@@ -1,14 +1,14 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
 # ║         Ractor - .rac Package Manager v3.10r27            ║
-# ║         https://github.com/CyberHuman-bot/Ractor          ║
+# ║         https://github.com/elezaio-linux/Ractor           ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 # ───────── VERSION ─────────
 RACTOR_VERSION="3.10r27"
-RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main"
+RACTOR_REPO_RAW="https://raw.githubusercontent.com/elezaio-linux/Ractor/refs/heads/main"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
 
@@ -646,7 +646,7 @@ ractor_self_update() {
     info "New version: $new_ver (current: $RACTOR_VERSION)"
     info "Running installer..."
     rm -f "$tmp_file"
-    curl -fsSL "https://raw.githubusercontent.com/CyberHuman-bot/Ractor/main/install.sh" | bash
+    curl -fsSL "https://raw.githubusercontent.com/elezaio-linux/Ractor/main/install.sh" | bash
     _log "SELF-UPDATE: $RACTOR_VERSION -> $new_ver"
 }
 
