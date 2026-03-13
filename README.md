@@ -1,16 +1,16 @@
 # Ractor 🗃️
 > A lightweight `.rac` package manager for Linux
 
-[![Version](https://img.shields.io/badge/version-3.10r26-blue)](https://github.com/CyberHuman-bot/Ractor)
+[![Version](https://img.shields.io/badge/version-3.10r26-blue)](https://github.com/elezaio-linux/Ractor)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)](https://github.com/CyberHuman-bot/Ractor)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)](https://github.com/elezaio-linux/Ractor)
 
 ---
 
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CyberHuman-bot/Ractor/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/elezaio-linux/Ractor/main/install.sh | bash
 ```
 
 ---
@@ -154,4 +154,4 @@ ractor self-update
 
 ## License
 
-MIT © [CyberHuman-bot](https://github.com/CyberHuman-bot)
+MIT © [elezaio-linux](https://github.com/elezaio-linux)
