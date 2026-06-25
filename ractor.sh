@@ -683,7 +683,7 @@ ${BOLD}Usage:${NC}
   ractor <command> [args]
 
 ${BOLD}Commands:${NC}
-  ${RED}beta${NC}                            Upgrades to beta
+  ${RED}beta${NC}                          Upgrades to beta
   ${GREEN}install${NC} <name|file.rac|url>   Install a package
   ${GREEN}remove${NC}  <name>                Remove a package
   ${GREEN}update${NC}  [name|--all]          Update one or all packages
@@ -744,6 +744,7 @@ case "$cmd" in
     clean)               ractor_clean ;;
     logs)                ractor_logs "$@" ;;
     self-update)         ractor_self_update ;;
+    beta)                ractor_beta_update ;;
     version|-v|--version) echo "Ractor v$RACTOR_VERSION" ;;
     help|--help|-h)      ractor_help ;;
     *) error "Unknown command: '$cmd'. Run 'ractor help'" ;;
