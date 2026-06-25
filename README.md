@@ -10,7 +10,7 @@
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/elezaio-linux/Ractor/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CyberHuman-bot/Ractor/main/install.sh | bash
 ```
 
 ---
