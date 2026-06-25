@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="3.10r28"
+RACTOR_VERSION="3.10r29"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main"
 RACTOR_REPO_BETA="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/beta"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
