@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-RACTOR_URL="https://raw.githubusercontent.com/elezaio-linux/Ractor/refs/heads/main/ractor.sh"
+RACTOR_URL="https://raw.githubusercontent.com/elezaio-linux/Ractor/refs/heads/beta/ractor.sh"
 
 if [[ -t 1 ]]; then
     LGREEN='\033[1;32m'; CYAN='\033[0;36m'
