@@ -23,16 +23,29 @@ error()   { echo -e "${LRED}[✗] Error:${NC} $*" >&2; exit 1; }
 warn()    { echo -e "${YELLOW}[!]${NC} $*"; }
 
 # ───────── CHECK DEPS ─────────
+install_package() {
+    local pkg=$1
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get update && sudo apt-get install -y "$pkg"
+    elif command -v dnf &>/dev/null; then
+        sudo dnf install -y "$pkg"
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -Sy --noconfirm "$pkg"
+    else
+        return 1
+    fi
+}
+
 for dep in curl tar jq; do
-    command -v "$dep" &>/dev/null || {
+    if ! command -v "$dep" &>/dev/null; then
         warn "Missing dependency: $dep"
-        if command -v apt-get &>/dev/null; then
-            info "Installing $dep..."
-            sudo apt-get install -y "$dep" || error "Could not install $dep"
+        info "Attempting to install $dep..."
+        if install_package "$dep"; then
+            success "Successfully installed $dep"
         else
-            error "$dep is required. Please install it manually."
+            error "$dep is required but could not be installed automatically. Please install it manually."
         fi
-    }
+    fi
 done
 
 # ───────── INSTALL DIR ─────────
