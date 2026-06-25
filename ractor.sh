@@ -670,7 +670,7 @@ ractor_beta_update() {
     info "Beta version: $beta_ver (current: $RACTOR_VERSION)"
     info "Running installer..."
     rm -f "$tmp_file"
-    curl -fsSL "https://raw.githubusercontent.com/CyberHuman-bot/Ractor/beta/install.sh" | bash
+    curl -fsSL "https://raw.githubusercontent.com/CyberHuman-bot/Ractor/Beta/install.sh" | bash
     _log "BETA-UPDATE: $RACTOR_VERSION -> $beta_ver"
 }
 # ───────── HELP ─────────
