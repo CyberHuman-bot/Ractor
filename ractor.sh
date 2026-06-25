@@ -7,9 +7,11 @@
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="3.10r27"
+RACTOR_VERSION="3.10r28"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/elezaio-linux/Ractor/refs/heads/main"
+RACTOR_REPO_BETA="https://raw.githubusercontent.com/elezaio-linux/Ractor/refs/heads/beta"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
+RACTOR_BETA_URL="$RACTOR_REPO_BETA/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
 
 # ───────── PATHS ─────────
@@ -650,6 +652,27 @@ ractor_self_update() {
     _log "SELF-UPDATE: $RACTOR_VERSION -> $new_ver"
 }
 
+ractor_beta_update() {
+    msg "Checking for Ractor updates..."
+    local tmp_file
+    tmp_file=$(mktemp /tmp/ractor.XXXXXX)
+    curl -fsSL "$RACTOR_BETA_URL" -o "$tmp_file" || {
+        rm -f "$tmp_file"
+        error "Failed to download update"
+    }
+    local new_ver
+    beta_ver=$(grep '^RACTOR_VERSION=' "$tmp_file" 2>/dev/null | cut -d'"' -f2 || echo "")
+    if [[ "$beta_ver" == "$RACTOR_VERSION" ]]; then
+        rm -f "$tmp_file"
+        success "Already up to date (v$RACTOR_VERSION)"
+        return
+    fi
+    info "Beta version: $beta_ver (current: $RACTOR_VERSION)"
+    info "Running installer..."
+    rm -f "$tmp_file"
+    curl -fsSL "https://raw.githubusercontent.com/elezaio-linux/Ractor/beta/install.sh" | bash
+    _log "BETA-UPDATE: $RACTOR_VERSION -> $beta_ver"
+}
 # ───────── HELP ─────────
 ractor_help() {
     echo -e "
@@ -660,6 +683,7 @@ ${BOLD}Usage:${NC}
   ractor <command> [args]
 
 ${BOLD}Commands:${NC}
+  ${RED}beta${NC}                            Upgrades to beta
   ${GREEN}install${NC} <name|file.rac|url>   Install a package
   ${GREEN}remove${NC}  <name>                Remove a package
   ${GREEN}update${NC}  [name|--all]          Update one or all packages
