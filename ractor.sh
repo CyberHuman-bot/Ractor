@@ -1,6 +1,6 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║         Ractor - .rac Package Manager v3.10r27            ║
+# ║         Ractor - .rac Package Manager v3.11r1             ║
 # ║         https://github.com/CyberHuman-bot/Ractor          ║
 # ╚═══════════════════════════════════════════════════════════╝
 
@@ -10,6 +10,8 @@ set -euo pipefail
 RACTOR_VERSION="3.10r29"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/main"
 RACTOR_REPO_BETA="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
+RACTOR_VERSION="3.11r1beta"
+RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
 RACTOR_BETA_URL="$RACTOR_REPO_BETA/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
