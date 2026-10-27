@@ -1,13 +1,13 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║         Ractor - .rac Package Manager v4.0r1beta          ║
+# ║         Ractor - .rac Package Manager v4.0r2beta          ║
 # ║         https://github.com/CyberHuman-bot/Ractor          ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="4.0r1beta"
+RACTOR_VERSION="4.0r2beta"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
 RACTOR_REPO_BETA="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
@@ -155,7 +155,7 @@ parse_meta() {
         PKG_VERSION=$(jq -r '.version' "$meta_file")
         PKG_DESC=$(jq -r '.description // ""' "$meta_file")
         PKG_MAINTAINER=$(jq -r '.maintainer // ""' "$meta_file")
-        PKG_DEPENDS=$(jq -r '.depends // ""' "$meta_//"" "$meta_file")
+        PKG_DEPENDS=$(jq -r '.depends // ""' "$meta_file")
         PKG_TYPE=$(jq -r '.type // "binary"' "$meta_file")
         PKG_ELECTRON=$(jq -r '.electron // "false"' "$meta_file")
         PKG_LICENSE=$(jq -r '.license // ""' "$meta_file")
@@ -701,7 +701,7 @@ ractor_clean() {
 ractor_self_update() {
     msg "Checking for Ractor updates..."
     local tmp_file
-    tmp_//""=$(mktemp /tmp/ractor.XXXXXX)
+    tmp_file=$(mktemp /tmp/ractor.XXXXXX)
     curl -fsSL "$RACTOR_SELF_URL" -o "$tmp_file" || {
         rm -f "$tmp_file"
         error "Failed to download update"
