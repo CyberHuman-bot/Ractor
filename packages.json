@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "updated": "2025-11-10",
+  "version": "1.1.0",
+  "updated": "2026-10-27",
   "repository": "https://github.com/elezaio-linux/Ractor",
   "description": "Ractor package registry - React app package manager",
   "packages": [
@@ -9,6 +9,8 @@
       "version": "1.0.0",
       "description": "A beautiful, simple calculator built with React",
       "repository": "https://github.com/ahfarmer/calculator.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/calculator-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Andrew Farmer",
       "license": "MIT",
       "tags": ["utility", "calculator", "math"]
@@ -18,6 +20,8 @@
       "version": "1.0.0",
       "description": "React app for searching emoji",
       "repository": "https://github.com/ahfarmer/emoji-search.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/emoji-search-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Andrew Farmer",
       "license": "MIT",
       "tags": ["emoji", "search", "fun"]
@@ -27,6 +31,8 @@
       "version": "1.0.0",
       "description": "A markdown editor with live preview",
       "repository": "https://github.com/franknawrocki/markdown-previewer.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/markdown-previewer-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Frank Nawrocki",
       "license": "MIT",
       "tags": ["markdown", "editor", "productivity"]
@@ -36,6 +42,8 @@
       "version": "1.0.0",
       "description": "Pomodoro timer for productivity",
       "repository": "https://github.com/freeCodeCamp/fcc-pomodoro-clock.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/pomodoro-clock-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "freeCodeCamp",
       "license": "BSD-3-Clause",
       "tags": ["productivity", "timer", "pomodoro"]
@@ -45,6 +53,8 @@
       "version": "1.0.0",
       "description": "Interactive drum machine with sound pads",
       "repository": "https://github.com/freeCodeCamp/fcc-drum-machine.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/drum-machine-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "freeCodeCamp",
       "license": "BSD-3-Clause",
       "tags": ["music", "audio", "entertainment"]
@@ -54,6 +64,8 @@
       "version": "1.0.0",
       "description": "Random quote generator with social sharing",
       "repository": "https://github.com/sophialittlejohn/random-quote-machine.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/quote-machine-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Sophia Littlejohn",
       "license": "MIT",
       "tags": ["quotes", "inspiration", "social"]
@@ -63,6 +75,8 @@
       "version": "2.0.0",
       "description": "Local weather application with forecast",
       "repository": "https://github.com/Karanjot-singh/react-weather-app.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/weather-app-2.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Karanjot Singh",
       "license": "MIT",
       "tags": ["weather", "forecast", "location"]
@@ -72,6 +86,8 @@
       "version": "1.0.0",
       "description": "Classic todo list with local storage",
       "repository": "https://github.com/kabirbaidhya/react-todo-app.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/todo-app-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Kabir Baidhya",
       "license": "MIT",
       "tags": ["productivity", "todo", "tasks"]
@@ -81,6 +97,8 @@
       "version": "1.0.0",
       "description": "Real-time chat application",
       "repository": "https://github.com/Kennybabs-py/react-chat-app.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/chat-app-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Kenny Babs",
       "license": "MIT",
       "tags": ["chat", "realtime", "communication"]
@@ -90,6 +108,8 @@
       "version": "1.0.0",
       "description": "Track your expenses and income",
       "repository": "https://github.com/Gapur/expense-tracker.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/expense-tracker-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Gapur Kassym",
       "license": "MIT",
       "tags": ["finance", "budget", "tracker"]
@@ -99,6 +119,8 @@
       "version": "1.0.0",
       "description": "Search and discover movies using OMDB API",
       "repository": "https://github.com/Ranveer098/movie-search-app.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/movie-search-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Ranveer",
       "license": "MIT",
       "tags": ["movies", "entertainment", "api"]
@@ -108,6 +130,8 @@
       "version": "1.0.0",
       "description": "Simple note-taking application",
       "repository": "https://github.com/rafaelmessias/react-notes-app.git",
+      "url": "https://github.com/CyberHuman-bot/Ractor/raw/main/packages/notes-app-1.0.0.rac",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "author": "Rafael Messias",
       "license": "MIT",
       "tags": ["notes", "productivity", "writing"]

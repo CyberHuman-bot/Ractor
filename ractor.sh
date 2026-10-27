@@ -54,10 +54,25 @@ else
     BLUE=''; CYAN=''; MAGENTA=''; BOLD=''; DIM=''; NC=''
 fi
 
+# ───────── GLOBALS ─────────
+ASSUME_YES=false
+RACTOR_CHANNEL="stable"
+
+
 # ───────── LOGGING ─────────
 mkdir -p "$(dirname "$RACTOR_LOG")" 2>/dev/null || true
 touch "$RACTOR_LOG" 2>/dev/null || true
 _log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$RACTOR_LOG" 2>/dev/null || true; }
+
+confirm() {
+    local prompt="$1"
+    if [[ "$ASSUME_YES" == "true" ]]; then
+        return 0
+    fi
+    read -rp "$prompt" choice
+    choice="${choice:-y}"
+    [[ "$choice" =~ ^[Yy]$ ]]
+}
 
 msg()     { echo -e "${LGREEN}==>${NC}${BOLD} $*${NC}";      _log "INFO: $*"; }
 info()    { echo -e "${BLUE} ->${NC} $*";                    _log "INFO: $*"; }
