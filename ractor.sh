@@ -1,15 +1,17 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════╗
-# ║         Ractor - .rac Package Manager v3.11r1             ║
+# ║         Ractor - .rac Package Manager v4.0r1beta          ║
 # ║         https://github.com/CyberHuman-bot/Ractor          ║
 # ╚═══════════════════════════════════════════════════════════╝
 
 set -euo pipefail
 
 # ───────── VERSION ─────────
-RACTOR_VERSION="3.11r1beta"
+RACTOR_VERSION="4.0r1beta"
 RACTOR_REPO_RAW="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
+RACTOR_REPO_BETA="https://raw.githubusercontent.com/CyberHuman-bot/Ractor/refs/heads/Beta"
 RACTOR_SELF_URL="$RACTOR_REPO_RAW/ractor.sh"
+RACTOR_BETA_URL="$RACTOR_REPO_BETA/ractor.sh"
 RACTOR_PKG_INDEX="$RACTOR_REPO_RAW/packages.json"
 
 # ───────── PATHS ─────────
@@ -52,10 +54,24 @@ else
     BLUE=''; CYAN=''; MAGENTA=''; BOLD=''; DIM=''; NC=''
 fi
 
+# ───────── GLOBALS ─────────
+ASSUME_YES=false
+RACTOR_CHANNEL="stable"
+
 # ───────── LOGGING ─────────
 mkdir -p "$(dirname "$RACTOR_LOG")" 2>/dev/null || true
 touch "$RACTOR_LOG" 2>/dev/null || true
 _log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$RACTOR_LOG" 2>/dev/null || true; }
+
+confirm() {
+    local prompt="$1"
+    if [[ "$ASSUME_YES" == "true" ]]; then
+        return 0
+    fi
+    read -rp "$prompt" choice
+    choice="${choice:-y}"
+    [[ "$choice" =~ ^[Yy]$ ]]
+}
 
 msg()     { echo -e "${LGREEN}==>${NC}${BOLD} $*${NC}";      _log "INFO: $*"; }
 info()    { echo -e "${BLUE} ->${NC} $*";                    _log "INFO: $*"; }
@@ -116,32 +132,48 @@ check_deps() {
 }
 
 # ───────── META PARSER ─────────
-# META file format:
-#   name=myapp
-#   version=1.0.0
-#   description=My app
-#   maintainer=yaman
-#   depends=curl,git,node
-#   type=binary|script|react|appimage
-#   electron=true|false
-#   license=MIT
-#   arch=x86_64|any
-
+# META file format (JSON v2 or Key=Value v1):
+# { "name": "myapp", "version": "1.0.0", ... }
+# OR
+# name=myapp
+# version=1.0.0
+# ...
+#
+# Supported types: binary | script | react | appimage
+#
+# electron=true|false (react only)
+# license=MIT
+# arch=x86_64|any
+#
 parse_meta() {
     local meta_file="$1"
     [[ ! -f "$meta_file" ]] && error "META file not found in package"
 
-    _get() { grep "^${1}=" "$meta_file" 2>/dev/null | cut -d= -f2- || echo ""; }
+    if [[ "$meta_file" == *.json ]]; then
+        # JSON v2 Parsing
+        PKG_NAME=$(jq -r '.name' "$meta_file")
+        PKG_VERSION=$(jq -r '.version' "$meta_file")
+        PKG_DESC=$(jq -r '.description // ""' "$meta_file")
+        PKG_MAINTAINER=$(jq -r '.maintainer // ""' "$meta_file")
+        PKG_DEPENDS=$(jq -r '.depends // ""' "$meta_//"" "$meta_file")
+        PKG_TYPE=$(jq -r '.type // "binary"' "$meta_file")
+        PKG_ELECTRON=$(jq -r '.electron // "false"' "$meta_file")
+        PKG_LICENSE=$(jq -r '.license // ""' "$meta_file")
+        PKG_ARCH=$(jq -r '.arch // "any"' "$meta_file")
+    else
+        # Legacy Key=Value v1 Parsing
+        _get() { grep "^${1}=" "$meta_file" 2>/dev/null | cut -d= -f2- || echo ""; }
 
-    PKG_NAME=$(_get name)
-    PKG_VERSION=$(_get version)
-    PKG_DESC=$(_get description)
-    PKG_MAINTAINER=$(_get maintainer)
-    PKG_DEPENDS=$(_get depends)
-    PKG_TYPE=$(_get type)
-    PKG_ELECTRON=$(_get electron)
-    PKG_LICENSE=$(_get license)
-    PKG_ARCH=$(_get arch)
+        PKG_NAME=$(_get name)
+        PKG_VERSION=$(_get version)
+        PKG_DESC=$(_get description)
+        PKG_MAINTAINER=$(_get maintainer)
+        PKG_DEPENDS=$(_get depends)
+        PKG_TYPE=$(_get type)
+        PKG_ELECTRON=$(_get electron)
+        PKG_LICENSE=$(_get license)
+        PKG_ARCH=$(_get arch)
+    fi
 
     PKG_TYPE="${PKG_TYPE:-binary}"
     PKG_ELECTRON="${PKG_ELECTRON:-false}"
@@ -177,9 +209,7 @@ handle_deps() {
     fi
 
     warn "Missing: ${missing[*]}"
-    read -rp "$(echo -e "${YELLOW}Install missing dependencies?${NC} [Y/n] ")" choice
-    choice="${choice:-y}"
-    if [[ "$choice" =~ ^[Yy]$ ]]; then
+    if confirm "$(echo -e "${YELLOW}Install missing dependencies?${NC} [Y/n] ")"; then
         _pkg_install "${missing[@]}"
     fi
     return 0
@@ -199,8 +229,7 @@ handle_optional() {
     info "Recommended packages:"
     for p in "${pkgs[@]}"; do step "$p"; done
     echo
-    read -rp "$(echo -e "${YELLOW}Install recommended packages?${NC} [y/N] ")" choice
-    if [[ "$choice" =~ ^[Yy]$ ]]; then
+    if confirm "$(echo -e "${YELLOW}Install recommended packages?${NC} [y/N] ")"; then
         _pkg_install "${pkgs[@]}"
     fi
     return 0
@@ -243,6 +272,17 @@ fetch_rac() {
         curl -fSL --progress-bar "$pkg_url" -o "$out_file" || error "Download failed"
     fi
 
+    # Checksum verification
+    if [[ -f "$RACTOR_CACHE/packages.json" ]]; then
+        local expected_hash
+        expected_hash=$(jq -r --arg n "$input" '.packages[] | select(.name==$n) | .sha256' "$RACTOR_CACHE/packages.json" 2>/dev/null || echo "")
+        if [[ -n "$expected_hash" && "$expected_hash" != "null" ]]; then
+            step "Verifying checksum..."
+            echo "$expected_hash  $out_file" | sha256sum -c - 2>/dev/null || error "Checksum verification failed! Package may be corrupted."
+            success "Checksum verified"
+        fi
+    fi
+
     echo "$out_file"
 }
 
@@ -261,7 +301,10 @@ ractor_install() {
     tar -xzf "$rac_file" -C "$extract_dir" 2>/dev/null || \
         error "Failed to extract — is this a valid .rac file?"
 
-    parse_meta "$extract_dir/META"
+    # Determine which META file to use
+    local meta_file="$extract_dir/META"
+    [[ -f "$extract_dir/meta.json" ]] && meta_file="$extract_dir/meta.json"
+    parse_meta "$meta_file"
 
     echo
     echo -e "${BOLD}Package:${NC}     $PKG_NAME"
@@ -276,14 +319,18 @@ ractor_install() {
         local installed_ver
         installed_ver=$(jq -r '.version' "$RACTOR_INSTALLED/$PKG_NAME.json")
         warn "$PKG_NAME v$installed_ver is already installed"
-        read -rp "$(echo -e "${YELLOW}Reinstall?${NC} [y/N] ")" choice
-        [[ ! "$choice" =~ ^[Yy]$ ]] && { rm -rf "$extract_dir"; exit 0; }
+        if ! confirm "$(echo -e "${YELLOW}Reinstall?${NC} [y/N] ")"; then
+            rm -rf "$extract_dir"
+            exit 0
+        fi
         _do_remove "$PKG_NAME"
     fi
 
-    read -rp "$(echo -e "${CYAN}Proceed with installation?${NC} [Y/n] ")" choice
-    choice="${choice:-y}"
-    [[ ! "$choice" =~ ^[Yy]$ ]] && { rm -rf "$extract_dir"; info "Aborted."; exit 0; }
+    if ! confirm "$(echo -e "${CYAN}Proceed with installation?${NC} [Y/n] ")"; then
+        rm -rf "$extract_dir"
+        info "Aborted."
+        exit 0
+    fi
 
     handle_deps "$PKG_DEPENDS"
     handle_optional "$extract_dir/optional/recommended"
@@ -355,23 +402,44 @@ _install_react() {
     local src="$1" dest="$2"
     [[ ! -f "$src/binaries/package.json" ]] && \
         error "React app missing package.json in binaries/"
-    command -v npm &>/dev/null || error "npm is required for React apps"
 
-    cp -r "$src/binaries/." "$dest/"
-    cd "$dest"
-
-    step "Installing npm dependencies..."
-    npm install --prefer-offline --no-audit --loglevel=error || error "npm install failed"
-
-    if [[ "$PKG_ELECTRON" == "true" ]]; then
-        step "Building Electron app..."
-        npm run build 2>/dev/null || true
-        printf '#!/bin/bash\ncd "%s" && npm start "$@"\n' "$dest" > "$INSTALL_BIN/$PKG_NAME"
+    # Check for pre-compiled build
+    if [[ -d "$src/binaries/build" ]]; then
+        step "Found pre-compiled build, skipping npm install/build..."
+        cp -r "$src/binaries/build" "$dest/build"
     else
-        step "Building React app..."
-        npm run build || error "React build failed"
-        printf '#!/bin/bash\ncd "%s" && npx serve build "$@"\n' "$dest" > "$INSTALL_BIN/$PKG_NAME"
+        command -v npm &>/dev/null || error "npm is required for React apps (pre-compiled build not found)"
+        cp -r "$src/binaries/." "$dest/"
+        cd "$dest"
+
+        step "Installing npm dependencies..."
+        npm install --prefer-offline --no-audit --loglevel=error || error "npm install failed"
+
+        if [[ "$PKG_ELECTRON" == "true" ]]; then
+            step "Building Electron app..."
+            npm run build 2>/dev/null || true
+            printf '#!/bin/bash\ncd "%s" && npm start "$@"\n' "$dest" > "$INSTALL_BIN/$PKG_NAME"
+        else
+            step "Building React app..."
+            npm run build || error "React build failed"
+            # Placeholder for launcher; will be finalized in next step
+            printf '#!/bin/bash\ncd "%s" && npx serve build "$@"\n' "$dest" > "$INSTALL_BIN/$PKG_NAME"
+        fi
     fi
+
+    # Unified Zero-Node Launcher logic
+    if [[ "$PKG_ELECTRON" != "true" ]]; then
+        local launcher_cmd
+        if command -v python3 &>/dev/null; then
+            launcher_cmd="python3 -m http.server 8080"
+        elif command -v npx &>/dev/null; then
+            launcher_cmd="npx serve build"
+        else
+            launcher_cmd="error 'No suitable static server found (python3 or npx)'"
+        fi
+        printf '#!/bin/bash\ncd "%s/build" && %s "$@"\n' "$dest" "$launcher_cmd" > "$INSTALL_BIN/$PKG_NAME"
+    fi
+
     chmod +x "$INSTALL_BIN/$PKG_NAME"
     step "Launcher → $INSTALL_BIN/$PKG_NAME"
 }
@@ -443,8 +511,10 @@ ractor_remove() {
     local ver
     ver=$(jq -r '.version' "$RACTOR_INSTALLED/$name.json")
     warn "This will remove $name v$ver"
-    read -rp "$(echo -e "${YELLOW}Continue?${NC} [y/N] ")" choice
-    [[ ! "$choice" =~ ^[Yy]$ ]] && { info "Aborted."; exit 0; }
+    if ! confirm "$(echo -e "${YELLOW}Continue?${NC} [y/N] ")"; then
+        info "Aborted."
+        exit 0
+    fi
 
     msg "Removing $name..."
     _do_remove "$name"
@@ -631,7 +701,7 @@ ractor_clean() {
 ractor_self_update() {
     msg "Checking for Ractor updates..."
     local tmp_file
-    tmp_file=$(mktemp /tmp/ractor.XXXXXX)
+    tmp_//""=$(mktemp /tmp/ractor.XXXXXX)
     curl -fsSL "$RACTOR_SELF_URL" -o "$tmp_file" || {
         rm -f "$tmp_file"
         error "Failed to download update"
@@ -650,6 +720,27 @@ ractor_self_update() {
     _log "SELF-UPDATE: $RACTOR_VERSION -> $new_ver"
 }
 
+ractor_beta_update() {
+    msg "Checking for Ractor updates..."
+    local tmp_file
+    tmp_file=$(mktemp /tmp/ractor.XXXXXX)
+    curl -fsSL "$RACTOR_BETA_URL" -o "$tmp_file" || {
+        rm -f "$tmp_file"
+        error "Failed to download update"
+    }
+    local new_ver
+    beta_ver=$(grep '^RACTOR_VERSION=' "$tmp_file" 2>/dev/null | cut -d'"' -f2 || echo "")
+    if [[ "$beta_ver" == "$RACTOR_VERSION" ]]; then
+        rm -f "$tmp_file"
+        success "Already up to date (v$RACTOR_VERSION)"
+        return
+    fi
+    info "Beta version: $beta_ver (current: $RACTOR_VERSION)"
+    info "Running installer..."
+    rm -f "$tmp_file"
+    curl -fsSL "https://raw.githubusercontent.com/CyberHuman-bot/Ractor/Beta/install.sh" | bash
+    _log "BETA-UPDATE: $RACTOR_VERSION -> $beta_ver"
+}
 # ───────── HELP ─────────
 ractor_help() {
     echo -e "
@@ -660,6 +751,7 @@ ${BOLD}Usage:${NC}
   ractor <command> [args]
 
 ${BOLD}Commands:${NC}
+  ${RED}beta${NC}                          Upgrades to beta
   ${GREEN}install${NC} <name|file.rac|url>   Install a package
   ${GREEN}remove${NC}  <name>                Remove a package
   ${GREEN}update${NC}  [name|--all]          Update one or all packages
@@ -720,6 +812,7 @@ case "$cmd" in
     clean)               ractor_clean ;;
     logs)                ractor_logs "$@" ;;
     self-update)         ractor_self_update ;;
+    beta)                ractor_beta_update ;;
     version|-v|--version) echo "Ractor v$RACTOR_VERSION" ;;
     help|--help|-h)      ractor_help ;;
     *) error "Unknown command: '$cmd'. Run 'ractor help'" ;;
